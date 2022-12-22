@@ -20,6 +20,7 @@ let
     os = rust.toTargetOs pkgs.stdenv.targetPlatform;
     build-triple = rust.toRustTargetSpec pkgs.stdenv.buildPlatform;
     target-triple = rust.toRustTargetSpec pkgs.stdenv.targetPlatform;
+    dylib-ext = if pkgs.stdenv.targetPlatform.isDarwin then ".dylib" else ".so";
 in
 pkgs.buildEnv {{
     extraOutputsToInstall = ["out" "bin" "lib"];
@@ -56,7 +57,9 @@ pkgs.buildEnv {{
             srcs = glob(
                 [
                     "bin/*.so",
+                    "bin/*.dylib",
                     "lib/*.so",
+                    "lib/*.dylib",
                     "lib/rustlib/*/codegen-backends/*.so",
                     "lib/rustlib/*/codegen-backends/*.dylib",
                     "lib/rustlib/*/bin/rust-lld",
@@ -103,7 +106,7 @@ pkgs.buildEnv {{
             rustc_lib = ":rustc_lib",
             binary_ext = "{binary_ext}",
             staticlib_ext = "{staticlib_ext}",
-            dylib_ext = "{dylib_ext}",
+            dylib_ext = "${{dylib-ext}}",
             os = "${{os}}",
             exec_triple = "${{build-triple}}",
             target_triple = "${{target-triple}}",
@@ -163,7 +166,6 @@ def nixpkgs_rust_configure(
     if not nix_file and not nix_file_content:
         nix_file_content = _rust_nix_contents.format(
             binary_ext = "",
-            dylib_ext = ".so",
             staticlib_ext = ".a",
             default_edition = default_edition,
             stdlib_linkflags = '["-lpthread", "-ldl"]',

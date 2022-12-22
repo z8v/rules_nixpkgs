@@ -41,6 +41,7 @@ load("@io_tweag_rules_nixpkgs//nixpkgs:toolchains/rust.bzl", "nixpkgs_rust_confi
 nixpkgs_rust_configure(
     repository = "@nixpkgs//:default.nix",
     name = "nix_rust",
+    default_edition = "2021"
 )
 
 load("@rules_rust//rust:repositories.bzl", "rust_repositories")
